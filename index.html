@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.container{
+			width:600px;
+			height:400px;
+			border:1px solid black;
+			margin:60px;
+		}
+		.progress_bar{
+			margin-left: 16px;
+			margin-top: 48px;
+			width:560px;
+			height:42px;
+			border:1px solid black;
+			border-radius: 10px;
+			position: relative;
+		}
+		.progress_bar .progress_bar_btn{
+			position: absolute;
+			width:50px;
+			height:50px;
+			top:-4px;	
+			border:1px solid black;
+			border-radius: 10px;
+			background-color: darkblue;
+		}
+		.progress_bar .progress_bar_btn:hover{
+			cursor:pointer;
+		}
+		.progress_bar .progress_bar_inner{
+			height:100%;
+			width:50%;
+			background-color: #CCC;
+			border-radius: 10px;
+		}
+		.progress_bar .progress_bar_num{
+			position: absolute;
+			top:-24px;
+			left:50%;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="progress_bar bar1" data-bind="type:'slider',data:demo1">
+			
+		</div>
+		<div class="progress_bar bar2">
+			<div class="progress_bar_inner"></div>
+			<div class="progress_bar_btn"></div>
+		</div>
+		<div class="progress_bar bar3">
+			<span class="progress_bar_num">50%</span>
+			<div class="progress_bar_inner"></div>
+			<div class="progress_bar_btn"></div>
+		</div>
+	</div>
+	<script>
+		;(function(){
+			//
+			var window = this||(0,eval)('this');
+			//
+			var FONTSIZE = (function(){
+				return document.body.currentStyle?document.body.currentStyle['fontSize']:getComputedStyle(document.body,false)['fontSize'];
+			})();
+			//
+			var VM = (function(){
+				//
+				var Method = {
+					//
+					'progressBar':function(dom,data){
+						var progressBar = document.createElement('div');
+						var params = data.data;
+						//
+						progressBar.style.width = (params.position||100)+'%';
+						//
+						dom.className += ' progress_bar';
+						//
+						progress_bar.className += " progress_bar_inner";
+						//
+						dom.appendChild(progressBar);
+					},
+					//
+					'slider':function(dom,data){
+						var progressBar = document.createElement('div');
+						//
+						progressBar.className += " progress_bar_inner";
+						//
+						var btn = document.createElement('div');
+						//
+						btn.className += ' progress_bar_btn';
+						//
+						var span_num = document.createElement('span');
+						//
+						span_num.className += ' progress_bar_num';
+						//
+						var num_text = "";
+						//
+						var params = data.data,
+						///
+						width = dom.clientWidth,
+						//
+						left = dom.offsetLeft,
+						//
+						realWidth = (params.position||100)*width/100;
+						//
+						dom.innerHTML = "";
+						//
+						setStyle(realWidth);
+						//
+						dom.appendChild(progressBar);
+						dom.appendChild(btn);
+						dom.appendChild(span_num);
+						function setStyle(w){
+							//
+							var span_position = w-parseInt(FONTSIZE) + 'px';
+							span_num.style.left = span_position;
+							num_text = ((w-25)/(width-50)*100).toFixed(2);
+							if(w-25>=(width-50)) num_text = 100;
+							if(w-25<=0) num_text = 0;
+							span_num.innerHTML = num_text+'%';
+							//
+							progress_bar_width = w+'px';
+							progressBar.style.width = progress_bar_width;
+							//
+							var btn_position = w-25;
+							if(btn_position>=width-50){
+								btn_position = width-50;
+							}
+							if(btn_position <= 0){
+								btn_position = 0;
+							}
+							btn_position = btn_position + 'px';
+							btn.style.left = btn_position;
+						}
+						btn.onmousedown = function(){
+							//
+							document.onmousemove = function(event){
+								var e = event||window.event;
+								//
+								var w = e.clientX-left;
+								console.log(btn.style.left);
+								setStyle(w>0?(w>width?width:w):0);
+							}
+							//
+							document.onselectstart = function(){
+								return false;
+							}
+							//
+							document.onmouseup = function(){
+								document.onmousemove = null;
+								//
+								document.onselectstart = null;
+							}
+						}
+					}
+				};
+				function getBindData(dom){
+					//
+					var data = dom.getAttribute('data-bind');
+					//
+					return !!data&&(new Function("return({"+data+"})"))();
+				}
+				return function(){
+					//
+					var doms = document.getElementsByTagName("*"),
+					//
+					ctx = null;
+					for(var i = 0;i<doms.length;i++){
+						//
+						ctx = getBindData(doms[i]);
+						//
+						ctx.type&&Method[ctx.type]&&Method[ctx.type](doms[i],ctx);
+					}
+				}
+			})();
+			window.VM = VM;
+		})();
+		var demo1 = {"position":60};
+		VM();
+	</script>
+</body>
+</html>
